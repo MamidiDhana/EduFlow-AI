@@ -94,7 +94,7 @@ export default function ProductivityPage() {
     try {
       const { data, error: qErr } = await supabase
         .from("study_tasks")
-        .select("id,status,title,due_date,priority")
+        .select("id,status,title,due_at,priority")
         .order("created_at", { ascending: false });
 
       if (qErr) {
@@ -119,8 +119,8 @@ export default function ProductivityPage() {
 
       const upcomingDeadlines = tasks
         .filter((t: any) => {
-          if (!t.due_date) return false;
-          const dueDate = new Date(t.due_date);
+          if (!t.due_at) return false;
+          const dueDate = new Date(t.due_at);
           return (
             dueDate >= today && dueDate <= twoWeeksOut && t.status !== "done"
           );
@@ -128,7 +128,7 @@ export default function ProductivityPage() {
         .slice(0, 5)
         .map((t: any) => ({
           title: t.title,
-          due: new Date(t.due_date).toLocaleDateString(undefined, {
+          due: new Date(t.due_at).toLocaleDateString(undefined, {
             month: "short",
             day: "numeric",
           }),

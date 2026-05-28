@@ -13,7 +13,7 @@ type Priority = "high" | "medium" | "low";
 type Task = {
   id: string;
   title: string;
-  description: string | null;
+  details: string | null;
   subject: string | null;
   priority: Priority;
   status: "todo" | "in_progress" | "done";
@@ -209,7 +209,7 @@ export default function StudyPlannerPage() {
 
   const [newLabel, setNewLabel] = useState("");
   const [newSubject, setNewSubject] = useState("");
-  const [newDescription, setNewDescription] = useState("");
+  const [newdetails, setNewdetails] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
   const [newPriority, setNewPriority] = useState<Priority>("medium");
   const [focused, setFocused] = useState<string | null>(null);
@@ -261,11 +261,11 @@ export default function StudyPlannerPage() {
             : row.done
               ? "done"
               : "todo";
-        const dueIso = (row.due_date ?? row.due_at ?? null) as string | null;
+        const dueIso = (row.due_at ?? row.due_at ?? null) as string | null;
         return {
           id: String(row.id),
           title: (row.title ?? row.label ?? "") as string,
-          description: (row.description ?? row.details ?? null) as
+          details: (row.details ?? row.details ?? null) as
             | string
             | null,
           subject: (row.subject ?? null) as string | null,
@@ -400,8 +400,8 @@ export default function StudyPlannerPage() {
 
     const minimal: Record<string, unknown> = {
       title: payload.title,
-      details: payload.description,
-      due_at: payload.due_date,
+      details: payload.details,
+      due_at: payload.due_at,
       priority: payload.priority,
       status: payload.status,
       user_id: payload.user_id,
@@ -435,11 +435,11 @@ export default function StudyPlannerPage() {
       const payload: Record<string, unknown> = {
         user_id: user.id,
         title: newLabel.trim(),
-        description: newDescription.trim() || null,
+        details: newdetails.trim() || null,
         subject: newSubject.trim() || null,
         priority: priorityToDb(newPriority),
         status: "todo",
-        due_date: dueIso,
+        due_at: dueIso,
       };
 
       const { data, error: insErr } = await insertWithFallback(payload);
@@ -452,7 +452,7 @@ export default function StudyPlannerPage() {
 
       setNewLabel("");
       setNewSubject("");
-      setNewDescription("");
+      setNewdetails("");
       setNewDueDate("");
       setNewPriority("medium");
     } catch (e) {
@@ -1244,16 +1244,16 @@ export default function StudyPlannerPage() {
                 className="block text-xs font-medium mb-1.5"
                 style={{ color: "var(--ui-heading)" }}
               >
-                Description
+                details
               </label>
               <textarea
                 placeholder="Optional details (chapters, problems, goals)…"
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                onFocus={() => setFocused("description")}
+                value={newdetails}
+                onChange={(e) => setNewdetails(e.target.value)}
+                onFocus={() => setFocused("details")}
                 onBlur={() => setFocused(null)}
                 style={{
-                  ...inputStyle("description"),
+                  ...inputStyle("details"),
                   minHeight: "84px",
                   resize: "none",
                 }}

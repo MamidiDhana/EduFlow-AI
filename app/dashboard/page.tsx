@@ -20,7 +20,7 @@ type QuickAction = {
   label: string;
   href: string;
   icon: React.ReactNode;
-  description: string;
+  details: string;
 };
 
 type DbTask = {
@@ -192,7 +192,7 @@ const focusSkeletonRows = [0, 1, 2, 3];
 const quickActions: QuickAction[] = [
   {
     label: "Ask AI",
-    description: "Instant answers",
+    details: "Instant answers",
     href: "/dashboard/doubt-solver",
     icon: (
       <svg
@@ -212,7 +212,7 @@ const quickActions: QuickAction[] = [
   },
   {
     label: "New Note",
-    description: "AI-generated",
+    details: "AI-generated",
     href: "/dashboard/notes",
     icon: (
       <svg
@@ -232,7 +232,7 @@ const quickActions: QuickAction[] = [
   },
   {
     label: "Add Task",
-    description: "Study planner",
+    details: "Study planner",
     href: "/dashboard/study-planner",
     icon: (
       <svg
@@ -252,7 +252,7 @@ const quickActions: QuickAction[] = [
   },
   {
     label: "Log Mood",
-    description: "How are you?",
+    details: "How are you?",
     href: "/dashboard/mood",
     icon: (
       <svg
@@ -1762,7 +1762,7 @@ export default function DashboardPage() {
                       className="text-[10px] leading-tight mt-0.5 truncate"
                       style={{ color: "var(--ui-muted)" }}
                     >
-                      {action.description}
+                      {action.details}
                     </p>
                   </div>
                 </Link>

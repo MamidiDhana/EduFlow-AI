@@ -81,8 +81,8 @@ function UpdatePasswordContent() {
         hash.startsWith("#") ? hash.slice(1) : hash,
       );
       const authMessage =
-        queryParams.get("error_description") ||
-        hashParams.get("error_description") ||
+        queryParams.get("error_details") ||
+        hashParams.get("error_details") ||
         queryParams.get("error") ||
         hashParams.get("error") ||
         queryParams.get("authError");

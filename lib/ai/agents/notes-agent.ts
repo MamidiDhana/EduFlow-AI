@@ -2,7 +2,7 @@ import { AgentRunInput, runAgentCompletion } from "./shared";
 
 export const agentName = "Notes Agent";
 
-export const agentDescription =
+export const agentdetails =
   "Generates clean, exam-friendly notes, summaries, and revision bullets.";
 
 export const systemPrompt = `You are EduFlow AI's Notes Agent.

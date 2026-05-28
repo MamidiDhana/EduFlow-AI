@@ -5,7 +5,7 @@ import Link from 'next/link';
 const features = [
   {
     title: 'Study Planner',
-    description:
+    details:
       'Organise your entire semester in minutes. Set tasks, deadlines, and daily goals — and let AI optimise your schedule automatically.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@ const features = [
   },
   {
     title: 'AI Doubt Solver',
-    description:
+    details:
       'Ask any academic question and get clear, instant explanations with examples — across every subject, 24 hours a day.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@ const features = [
   },
   {
     title: 'Notes Generator',
-    description:
+    details:
       'Paste any lecture or topic and get structured, revision-ready notes in seconds. Clean formatting. Zero effort.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ const features = [
   },
   {
     title: 'Productivity Tracker',
-    description:
+    details:
       'Visualise your focus time, streaks, and completion rates. Stay consistent with gentle nudges and weekly insights.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@ const features = [
   },
   {
     title: 'Mood Tracker',
-    description:
+    details:
       'Track your daily mood, reflect on patterns, and build healthier study habits with simple emotional check-ins.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ export default function Features() {
 
 type CardProps = {
   title: string;
-  description: string;
+  details: string;
   icon: React.ReactNode;
   accent: string;
   accentBg: string;
@@ -186,7 +186,7 @@ type CardProps = {
   wide?: boolean;
 };
 
-function FeatureCard({ title, description, icon, accent, accentBg, tag, href }: CardProps) {
+function FeatureCard({ title, details, icon, accent, accentBg, tag, href }: CardProps) {
   return (
     <Link href={href} className="block focus:outline-none group">
       <div
@@ -242,7 +242,7 @@ function FeatureCard({ title, description, icon, accent, accentBg, tag, href }: 
             {title}
           </h3>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--ui-muted)' }}>
-            {description}
+            {details}
           </p>
         </div>
 

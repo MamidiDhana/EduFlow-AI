@@ -2,7 +2,7 @@ import { AgentRunInput, runAgentCompletion } from "./shared";
 
 export const agentName = "Productivity Agent";
 
-export const agentDescription =
+export const agentdetails =
   "Analyzes study workload, progress, and pending tasks to give practical productivity advice.";
 
 export const systemPrompt = `You are EduFlow AI's Productivity Agent.

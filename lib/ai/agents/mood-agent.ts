@@ -2,7 +2,7 @@ import { AgentRunInput, runAgentCompletion } from "./shared";
 
 export const agentName = "Mood Agent";
 
-export const agentDescription =
+export const agentdetails =
   "Gives supportive, student-friendly study suggestions based on mood without medical claims.";
 
 export const systemPrompt = `You are EduFlow AI's Mood Agent.

@@ -7,37 +7,37 @@ export default function FeaturesPage() {
     {
       icon: "📝",
       title: "Smart Note Taking",
-      description:
+      details:
         "Create, organize, and manage your notes with an intuitive editor. Pin important notes and organize by subject.",
     },
     {
       icon: "✨",
       title: "AI-Powered Notes Generator",
-      description:
+      details:
         "Generate comprehensive notes from your subjects using advanced AI. Save time and capture key concepts effortlessly.",
     },
     {
       icon: "📄",
       title: "Export as PDF",
-      description:
+      details:
         "Download your notes as professionally formatted PDFs. Perfect for sharing, archiving, or offline reading.",
     },
     {
       icon: "🔗",
       title: "Shareable Links",
-      description:
+      details:
         "Create shareable links for your notes. Share study materials with classmates and collaborate easily.",
     },
     {
       icon: "🎨",
       title: "Premium Theme",
-      description:
+      details:
         "Enjoy a modern, clean interface with the premium mint/teal theme. Optimized for focus and productivity.",
     },
     {
       icon: "⚡",
       title: "Lightning Fast",
-      description:
+      details:
         "Built with Next.js for blazing-fast performance. Experience smooth interactions and instant saves.",
     },
   ];
@@ -151,7 +151,7 @@ export default function FeaturesPage() {
                   fontSize: "0.95rem",
                 }}
               >
-                {feature.description}
+                {feature.details}
               </p>
             </div>
           ))}

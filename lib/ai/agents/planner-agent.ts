@@ -2,7 +2,7 @@ import { AgentRunInput, runAgentCompletion } from "./shared";
 
 export const agentName = "Planner Agent";
 
-export const agentDescription =
+export const agentdetails =
   "Creates practical study plans, schedules, deadlines, and daily task guidance.";
 
 export const systemPrompt = `You are EduFlow AI's Planner Agent.

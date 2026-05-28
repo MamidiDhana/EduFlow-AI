@@ -2,19 +2,22 @@ create extension if not exists "pgcrypto";
 
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  email text,
   full_name text,
-  created_at timestamptz default now()
+  avatar_url text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 create table if not exists study_tasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
   title text not null,
-  description text,
-  completed boolean default false,
-  due_date timestamptz,
-  created_at timestamptz default now()
+  details text,
+  due_at timestamptz,
+  status text,
+  priority smallint,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 create table if not exists notes (
@@ -22,29 +25,38 @@ create table if not exists notes (
   user_id uuid references auth.users(id) on delete cascade,
   title text not null,
   content text,
-  created_at timestamptz default now()
+  subject text,
+  pinned boolean default false,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 create table if not exists mood_entries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
-  mood text,
+  mood smallint,
   note text,
-  created_at timestamptz default now()
+  occurred_at timestamptz default now(),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 create table if not exists productivity_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
-  duration integer,
-  task text,
+  subject text,
+  duration_minutes integer,
+  session_date date,
+  notes text,
   created_at timestamptz default now()
 );
 
 create table if not exists streaks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
-  streak_count integer default 0,
+  current_streak integer default 0,
+  longest_streak integer default 0,
   last_active_date date,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );

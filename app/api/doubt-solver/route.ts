@@ -8,7 +8,7 @@ type RequestBody = {
   context?: { selectedMood?: string; recentTasks?: string[] };
 };
 
-const moodDescriptions: Record<string, string> = {
+const mooddetailss: Record<string, string> = {
   tired: "I'm feeling tired and low on energy",
   neutral: "I'm feeling okay, neither energized nor drained",
   motivated: "I'm feeling motivated and energized",
@@ -18,7 +18,7 @@ function getMoodPrompt(
   selectedMood: string,
   recentTasks: string[] = [],
 ): string {
-  const moodDesc = moodDescriptions[selectedMood] || "feeling neutral";
+  const moodDesc = mooddetailss[selectedMood] || "feeling neutral";
   const taskContext =
     recentTasks.length > 0
       ? `\n\nRecent tasks/subjects: ${recentTasks.join(", ")}`

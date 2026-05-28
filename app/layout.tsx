@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 
 export const metadata: Metadata = {
   title: "EduFlow AI — Your AI-Powered Student Assistant",
-  description:
+  details:
     "EduFlow AI helps students plan smarter, solve doubts instantly, generate notes, track productivity, and stay focused — all in one intelligent platform.",
   keywords: [
     "EduFlow AI",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "EduFlow AI",
-    description:
+    details:
       "Turn your academic chaos into clarity with AI-powered study tools.",
     type: "website",
   },

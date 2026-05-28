@@ -43,7 +43,7 @@ function LoginPageContent() {
   useEffect(() => {
     const authMessage =
       searchParams.get("authError") ||
-      searchParams.get("error_description") ||
+      searchParams.get("error_details") ||
       searchParams.get("error");
     if (authMessage) setError(getAuthErrorMessage(authMessage));
   }, [searchParams]);

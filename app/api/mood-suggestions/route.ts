@@ -3,7 +3,7 @@ import { routeAgent } from "@/lib/ai/agents/agent-router";
 
 type MoodLevel = "tired" | "neutral" | "motivated";
 
-const moodDescriptions: Record<MoodLevel, string> = {
+const mooddetailss: Record<MoodLevel, string> = {
   tired: "I'm feeling tired and low on energy",
   neutral: "I'm feeling okay, neither energized nor drained",
   motivated: "I'm feeling motivated and energized",
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     };
     const mood = body.mood?.toLowerCase() as MoodLevel | undefined;
 
-    if (!mood || !moodDescriptions[mood]) {
+    if (!mood || !mooddetailss[mood]) {
       return NextResponse.json(
         { error: "Valid mood is required: tired, neutral, or motivated" },
         { status: 400 },
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const suggestion = await routeAgent({
       agentType: "mood",
       userMessage:
-        `${moodDescriptions[mood]}. Give 2-3 short, actionable study suggestions for right now.` +
+        `${mooddetailss[mood]}. Give 2-3 short, actionable study suggestions for right now.` +
         taskContext,
       context: { source: "mood-suggestions", mood, recentTasks },
     });

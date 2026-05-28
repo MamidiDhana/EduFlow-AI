@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const nextPath = getSafeNextPath(request.nextUrl.searchParams.get("next"));
   const providerError =
-    request.nextUrl.searchParams.get("error_description") ||
+    request.nextUrl.searchParams.get("error_details") ||
     request.nextUrl.searchParams.get("error");
 
   if (providerError) {

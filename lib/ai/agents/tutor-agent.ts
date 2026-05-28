@@ -2,7 +2,7 @@ import { AgentRunInput, runAgentCompletion } from "./shared";
 
 export const agentName = "Tutor Agent";
 
-export const agentDescription =
+export const agentdetails =
   "Solves doubts like a teacher with step-by-step explanations and simple examples.";
 
 export const systemPrompt = `You are EduFlow AI's Tutor Agent.
