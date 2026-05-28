@@ -14,7 +14,6 @@ type Task = {
   id: string;
   title: string;
   details: string | null;
-  subject: string | null;
   priority: Priority;
   status: "todo" | "in_progress" | "done";
   due: string | null;
@@ -208,7 +207,6 @@ export default function StudyPlannerPage() {
   const [generatedPlan, setGeneratedPlan] = useState<string | null>(null);
 
   const [newLabel, setNewLabel] = useState("");
-  const [newSubject, setNewSubject] = useState("");
   const [newdetails, setNewdetails] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
   const [newPriority, setNewPriority] = useState<Priority>("medium");
@@ -261,14 +259,14 @@ export default function StudyPlannerPage() {
             : row.done
               ? "done"
               : "todo";
-        const dueIso = (row.due_at ?? row.due_at ?? null) as string | null;
+        const dueIso = (row.due_at ?? null) as string | null;
         return {
           id: String(row.id),
           title: (row.title ?? row.label ?? "") as string,
           details: (row.details ?? row.details ?? null) as
             | string
             | null,
-          subject: (row.subject ?? null) as string | null,
+          
           priority: dbToPriority(row.priority),
           status,
           due: formatDue(dueIso),
@@ -436,7 +434,6 @@ export default function StudyPlannerPage() {
         user_id: user.id,
         title: newLabel.trim(),
         details: newdetails.trim() || null,
-        subject: newSubject.trim() || null,
         priority: priorityToDb(newPriority),
         status: "todo",
         due_at: dueIso,
@@ -451,7 +448,6 @@ export default function StudyPlannerPage() {
       await loadTasks();
 
       setNewLabel("");
-      setNewSubject("");
       setNewdetails("");
       setNewDueDate("");
       setNewPriority("medium");
@@ -498,7 +494,6 @@ export default function StudyPlannerPage() {
           .filter((task) => task.status !== "done")
           .map((task) => ({
             title: task.title,
-            subject: task.subject,
             due: task.due,
             priority: task.priority,
             status: task.status,
@@ -1134,8 +1129,7 @@ export default function StudyPlannerPage() {
                       style={{ color: "var(--ui-muted)" }}
                     >
                       {[
-                        task.subject || "General",
-                        task.due ? `Due ${task.due}` : null,
+                      task.due ? `Due ${task.due}` : null,
                       ]
                         .filter(Boolean)
                         .join(" • ")}
@@ -1218,24 +1212,6 @@ export default function StudyPlannerPage() {
                 onBlur={() => setFocused(null)}
                 onKeyDown={(e) => e.key === "Enter" && addTask()}
                 style={inputStyle("label")}
-              />
-            </div>
-
-            <div>
-              <label
-                className="block text-xs font-medium mb-1.5"
-                style={{ color: "var(--ui-heading)" }}
-              >
-                Subject
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Physics"
-                value={newSubject}
-                onChange={(e) => setNewSubject(e.target.value)}
-                onFocus={() => setFocused("subject")}
-                onBlur={() => setFocused(null)}
-                style={inputStyle("subject")}
               />
             </div>
 
