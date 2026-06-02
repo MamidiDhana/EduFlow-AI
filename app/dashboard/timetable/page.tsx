@@ -422,15 +422,55 @@ export default function TimetablePage() {
 
       // Try to parse clean JSON array from answer
       let jsonText = data.answer.trim();
-      // Basic JSON cleaner in case model wraps in markdown
-      if (jsonText.includes("```")) {
+      
+      // Extract content between the first '[' and last ']'
+      const firstBracket = jsonText.indexOf("[");
+      const lastBracket = jsonText.lastIndexOf("]");
+      const firstBrace = jsonText.indexOf("{");
+      const lastBrace = jsonText.lastIndexOf("}");
+
+      if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+        jsonText = jsonText.substring(firstBracket, lastBracket + 1);
+      } else if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        jsonText = "[" + jsonText.substring(firstBrace, lastBrace + 1) + "]";
+      } else if (jsonText.includes("```")) {
         const match = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
         if (match) {
-          jsonText = match[1];
+          jsonText = match[1].trim();
         }
       }
 
-      const parsedArray = JSON.parse(jsonText);
+      // Sanitize raw newlines and tabs inside string values in the JSON block
+      let sanitizedJson = "";
+      let inString = false;
+      let escaped = false;
+      for (let i = 0; i < jsonText.length; i++) {
+        const char = jsonText[i];
+        if (char === '"' && !escaped) {
+          inString = !inString;
+          sanitizedJson += char;
+        } else if (char === '\\' && inString) {
+          escaped = !escaped;
+          sanitizedJson += char;
+        } else {
+          if (inString) {
+            if (char === '\n') {
+              sanitizedJson += '\\n';
+            } else if (char === '\r') {
+              sanitizedJson += '\\r';
+            } else if (char === '\t') {
+              sanitizedJson += '\\t';
+            } else {
+              sanitizedJson += char;
+            }
+          } else {
+            sanitizedJson += char;
+          }
+          escaped = false;
+        }
+      }
+
+      const parsedArray = JSON.parse(sanitizedJson);
       if (!Array.isArray(parsedArray)) {
         throw new Error("AI did not return a valid list of classes. Please rephrase.");
       }
@@ -461,7 +501,7 @@ export default function TimetablePage() {
 
       setAiPreview(verified);
     } catch (err) {
-      console.error(err);
+      console.warn("AI Timetable Parse Warning:", err);
       setAiError(err instanceof Error ? err.message : "AI could not parse schedule. Try giving simpler details.");
     } finally {
       setAiLoading(false);

@@ -48,7 +48,7 @@ Your output must be:
 
 Note: Make sure to convert any 12-hour time formats (like "2 PM", "3:30 PM", "9 AM") to 24-hour time strings ("14:00", "15:30", "09:00").
 If multiple days are listed (e.g. "Mon, Wed, Fri" or "Monday to Friday"), output separate entries in the array for each day.
-Only output the raw JSON array. Do not wrap it in markdown. Do not add comments.`;
+Only output the raw JSON array. Do not wrap it in markdown. Do not add comments. Never output raw newline characters or unescaped double quotes inside string values. Every JSON property and string value must be properly formatted and terminated.`;
 
 export async function runAgent({ userMessage, context }: AgentRunInput) {
   return runAgentCompletion({
