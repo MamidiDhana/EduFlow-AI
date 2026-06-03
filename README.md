@@ -232,6 +232,32 @@ Please keep changes clean, focused, and easy to review.
 
 ---
 
+## 💖 Contributors
+
+Thanks to all the amazing people who contribute to **EduFlow-AI** 🚀
+
+<p align="center">
+  <a href="https://github.com/prabhakarshukla/EduFlow-AI/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=prabhakarshukla/EduFlow-AI" alt="Contributors"/>
+  </a>
+</p>
+
+---
+
+## ⭐ Project Support
+
+<p align="center">
+  <a href="https://github.com/prabhakarshukla/EduFlow-AI/stargazers">
+    <img src="https://img.shields.io/github/stars/prabhakarshukla/EduFlow-AI?style=social" alt="Stars">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/prabhakarshukla/EduFlow-AI/network/members">
+    <img src="https://img.shields.io/github/forks/prabhakarshukla/EduFlow-AI?style=social" alt="Forks">
+  </a>
+</p>
+
+---
+
 ##  License
 
 This project is licensed under the MIT License.
