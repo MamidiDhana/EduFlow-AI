@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature or enhancement for LecturePulse
+about: Suggest a new feature or enhancement for EduFlow-AI
 title: "[FEATURE] "
 ---
 

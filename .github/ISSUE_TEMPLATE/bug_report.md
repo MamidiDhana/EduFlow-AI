@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug or broken behavior in LecturePulse
+about: Report a bug or broken behavior in EduFlow-AI
 title: "[BUG] "
 ---
 
