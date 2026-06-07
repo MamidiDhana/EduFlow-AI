@@ -141,26 +141,126 @@ git checkout -b feat/your-feature-name
 
 ### Commit Message Style
 
-Follow the [Conventional Commits](https://www.conventionalcommits.org/) standard:
+Follow the [Conventional Commits](https://www.conventionalcommits.org/) standard. Your commits are validated automatically by a `commit-msg` hook.
+
+#### Format
 
 ```text
-<type>(<optional scope>): <short description>
+<type>(<scope>): <description>
+
+<body (optional)>
+
+<footer (optional)>
 ```
 
-**Examples for EduFlow AI:**
+#### Type
+
+Required. Must be one of:
+- **`feat`** — new feature
+- **`fix`** — bug fix
+- **`docs`** — documentation changes
+- **`style`** — UI/formatting changes (not CSS)
+- **`refactor`** — code restructuring without behavior change
+- **`test`** — adding or updating tests
+- **`chore`** — maintenance, deps, config
+- **`perf`** — performance improvement
+- **`ci`** — CI/CD pipeline changes
+
+#### Scope (Optional)
+
+Component or area affected: `(planner)`, `(streak)`, `(ai)`, `(dashboard)`, `(auth)`, etc.
+
+#### Description
+
+- Use **imperative mood** — "add" not "added" or "adds"
+- **Lowercase first letter**
+- No period at the end
+- Under **100 characters**
+
+#### Body & Footer (Optional)
+
+Add details or reference issues:
 ```text
 feat(planner): add recurring task support to study planner
-fix(streak): resolve streak reset on timezone change
-docs: add environment setup steps to CONTRIBUTING.md
-chore(deps): upgrade supabase-js to latest version
-refactor(ai): extract gemini prompt templates into constants
-style(dashboard): fix weekly progress graph overflow on mobile
+
+Recurring tasks help users maintain consistent study habits.
+Supports daily, weekly, and custom intervals with skip logic.
+
+Closes #24
 ```
 
-**Rules:**
-- Use **imperative mood** — "add", not "added" or "adds"
-- Keep the subject line under **72 characters**
-- Reference related issues at the bottom: `Closes #12` or `Fixes #7`
+#### ✅ Good Commits
+
+```text
+feat(planner): add recurring task support to study planner
+```
+Clear, specific, uses imperative mood.
+
+```text
+fix(streak): resolve streak reset on timezone change
+```
+Problem + solution, lowercase, no period.
+
+```text
+docs(contributing): add commit message examples
+
+Includes good/bad examples and validation rules.
+```
+Scope + description, optional body explains impact.
+
+```text
+refactor(ai): extract gemini prompt templates into constants
+
+Improves maintainability and reduces duplication across prompt generation.
+Templates now defined in constants/prompts.ts.
+
+Closes #42
+```
+Clear scope, good description, body explains why.
+
+#### ❌ Bad Commits
+
+```text
+Update code
+```
+Too vague. What did you change?
+
+```text
+Added new feature to the dashboard component.
+```
+Imperative mood failed ("Added" not "add"). Too generic.
+
+```text
+Fix bugs in the streak calculation and update the notes UI and clean up some CSS
+```
+Multiple unrelated changes. Split into separate commits.
+
+```text
+feat(dashboard): Improve the UI by making it look better and adding new stuff.
+```
+Vague. "Look better" and "new stuff" don't explain what actually changed.
+
+```text
+chore: Update dependencies and refactor auth and fix a critical security issue
+```
+Mixes chore, refactor, and fix. Should be separate commits.
+
+#### Validation
+
+Your commits are validated with commitlint. Invalid messages are rejected:
+```
+✖ [type]: type must be one of [feat, fix, docs, style, refactor, test, chore, perf, ci, revert]
+✖ [subject-empty]: subject may not be empty
+✖ [subject-full-stop]: subject must not end with a full stop
+✖ [header-max-length]: header must not be longer than 100 characters
+```
+
+If validation fails, amend your commit:
+```bash
+git commit --amend
+```
+
+Then retry the same command.
 
 ---
 
