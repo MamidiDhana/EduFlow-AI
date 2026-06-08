@@ -35,7 +35,6 @@ export default function Footer() {
   if (isDashboardOrAuth) {
     return null;
   }
-
   return (
     <footer
       className="bg-[#222022] dark:bg-[#020617]"

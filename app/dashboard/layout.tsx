@@ -210,7 +210,7 @@ export default function DashboardLayout({
           ${mobileOpen ? "left-0" : "-left-64 md:left-0"}
         `}
         style={{
-          top: "0px",
+          top: "px",
           height: "100vh",
           width: collapsed ? "64px" : "224px",
           background: "var(--ui-surface)",
