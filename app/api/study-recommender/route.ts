@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface StudyTask {
   subject: string;
   deadline: string;
@@ -28,7 +26,7 @@ interface StudyPlanResponse {
   timetable: DaySchedule[];
 }
 
-// ─── Gemini client ─────────────────────────────────────────────────────────────
+//  Gemini client 
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
@@ -36,7 +34,7 @@ const ai = new GoogleGenAI({
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
-// ─── Route handler ─────────────────────────────────────────────────────────────
+//  Route handler 
 
 export async function POST(req: Request) {
   try {
@@ -49,7 +47,7 @@ export async function POST(req: Request) {
     const weakSubjects = String(formData.get("weakSubjects") || "");
     const syllabusText = String(formData.get("syllabusText") || "");
 
-    // ── Input validation ───────────────────────────────────────────────────────
+    //  Input validation 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
         { error: "GEMINI_API_KEY is not configured." },
@@ -64,7 +62,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // ── Build prompt ───────────────────────────────────────────────────────────
+    // ── Build prompt 
     const today = new Date().toISOString().split("T")[0];
 
     const prompt = `

@@ -38,7 +38,6 @@ export default function StudyPlannerPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ── Button guards — completely independent ────────────────────────────────────
   // "Add Task" only cares about the current form fields
   const canAddTask = subject.trim().length > 0 && deadline.length > 0;
   // "Generate" only cares about whether tasks have been saved + not loading
