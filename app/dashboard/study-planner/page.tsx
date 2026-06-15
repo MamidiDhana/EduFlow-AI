@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { marked } from "marked";
 import { supabase } from "../../../lib/supabase";
 import {
   formatLastActiveDate,
@@ -205,6 +206,27 @@ export default function StudyPlannerPage() {
   const [planTyping, setPlanTyping] = useState(false);
   const [planError, setPlanError] = useState<string | null>(null);
   const [generatedPlan, setGeneratedPlan] = useState<string | null>(null);
+
+  const [ageOrGrade, setAgeOrGrade] = useState("");
+  const [intensity, setIntensity] = useState<"light" | "moderate" | "intensive">("moderate");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedAge = localStorage.getItem("eduflow_planner_age_grade");
+      if (savedAge) setAgeOrGrade(savedAge);
+      const savedIntensity = localStorage.getItem("eduflow_planner_intensity");
+      if (savedIntensity === "light" || savedIntensity === "moderate" || savedIntensity === "intensive") {
+        setIntensity(savedIntensity);
+      }
+    }
+  }, []);
+
+  const savePreferences = (age: string, level: "light" | "moderate" | "intensive") => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("eduflow_planner_age_grade", age);
+      localStorage.setItem("eduflow_planner_intensity", level);
+    }
+  };
 
   const [newLabel, setNewLabel] = useState("");
   const [newdetails, setNewdetails] = useState("");
@@ -490,6 +512,8 @@ export default function StudyPlannerPage() {
       const context = {
         source: "study-planner",
         totalTasks: tasks.length,
+        ageOrGrade: ageOrGrade.trim(),
+        intensity,
         pendingTasks: tasks
           .filter((task) => task.status !== "done")
           .map((task) => ({
@@ -633,27 +657,98 @@ export default function StudyPlannerPage() {
 
       <Card>
         <SectionLabel>AI Study Plan Generator</SectionLabel>
-        <div className="space-y-3">
-          <input
-            type="text"
-            value={planPrompt}
-            onChange={(e) => {
-              setPlanPrompt(e.target.value);
-              if (planError) setPlanError(null);
-            }}
-            placeholder="Ask AI to generate your study plan..."
-            className="w-full"
-            style={{
-              background: "var(--ui-surface)",
-              border: "1px solid rgba(110,231,216,0.15)",
-              color: "var(--ui-heading)",
-              outline: "none",
-              borderRadius: "0.75rem",
-              padding: "0.625rem 0.875rem",
-              fontSize: "0.875rem",
-            }}
-            disabled={planLoading || planTyping}
-          />
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                className="block text-xs font-semibold mb-1.5"
+                style={{ color: "var(--ui-muted)" }}
+              >
+                Age or Grade Level
+              </label>
+              <input
+                type="text"
+                value={ageOrGrade}
+                onChange={(e) => {
+                  setAgeOrGrade(e.target.value);
+                  savePreferences(e.target.value, intensity);
+                }}
+                onFocus={() => setFocused("ageOrGrade")}
+                onBlur={() => setFocused(null)}
+                placeholder="e.g. Class 10th, 15 years old"
+                className="w-full"
+                style={inputStyle("ageOrGrade")}
+                disabled={planLoading || planTyping}
+              />
+            </div>
+            <div>
+              <label
+                className="block text-xs font-semibold mb-1.5"
+                style={{ color: "var(--ui-muted)" }}
+              >
+                Study Intensity
+              </label>
+              <div
+                className="flex items-center gap-1.5 p-1 rounded-xl w-full"
+                style={{
+                  background: "var(--ui-surface)",
+                  border: "1px solid rgba(110,231,216,0.15)",
+                  height: "38px",
+                }}
+              >
+                {(["light", "moderate", "intensive"] as const).map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => {
+                      setIntensity(level);
+                      savePreferences(ageOrGrade, level);
+                    }}
+                    className="flex-1 h-full rounded-lg text-xs font-semibold capitalize transition-all duration-150"
+                    style={{
+                      background:
+                        intensity === level
+                          ? "linear-gradient(135deg,#6EE7D8,#14B8A6)"
+                          : "transparent",
+                      color: intensity === level ? "#111827" : "var(--ui-muted)",
+                    }}
+                    disabled={planLoading || planTyping}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label
+              className="block text-xs font-semibold mb-1.5"
+              style={{ color: "var(--ui-muted)" }}
+            >
+              Study Plan Prompt
+            </label>
+            <input
+              type="text"
+              value={planPrompt}
+              onChange={(e) => {
+                setPlanPrompt(e.target.value);
+                if (planError) setPlanError(null);
+              }}
+              placeholder="Ask AI to generate your study plan..."
+              className="w-full"
+              style={{
+                background: "var(--ui-surface)",
+                border: "1px solid rgba(110,231,216,0.15)",
+                color: "var(--ui-heading)",
+                outline: "none",
+                borderRadius: "0.75rem",
+                padding: "0.625rem 0.875rem",
+                fontSize: "0.875rem",
+              }}
+              disabled={planLoading || planTyping}
+            />
+          </div>
 
           <button
             type="button"
@@ -723,25 +818,32 @@ export default function StudyPlannerPage() {
 
           {generatedPlan && (
             <div
-              className="rounded-xl p-4"
+              className="rounded-xl p-6"
               style={{
-                background: "rgba(110,231,216,0.06)",
-                border: "1px solid rgba(110,231,216,0.22)",
+                background: "rgba(110,231,216,0.04)",
+                border: "1px solid rgba(110,231,216,0.20)",
               }}
             >
               <p
-                className="text-xs font-semibold uppercase tracking-wide mb-2"
+                className="text-xs font-semibold uppercase tracking-wide mb-4"
                 style={{ color: "#0f766e" }}
               >
                 Generated Plan
               </p>
-              <p
-                className="text-sm whitespace-pre-wrap leading-relaxed"
-                style={{ color: "var(--ui-heading)" }}
-              >
-                {generatedPlan}
-                {planTyping && <span className="animate-pulse">|</span>}
-              </p>
+              <div
+                className="text-sm leading-relaxed space-y-3 text-[var(--ui-text)]
+                  [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mt-5 [&_h1]:mb-3 [&_h1]:text-[var(--ui-heading)]
+                  [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2.5 [&_h2]:text-[var(--ui-heading)]
+                  [&_h3]:text-base [&_h3]:font-bold [&_h3]:mt-3.5 [&_h3]:mb-2 [&_h3]:text-[var(--ui-heading)]
+                  [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:text-[var(--ui-text)]
+                  [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:space-y-1.5 [&_ul]:text-[var(--ui-text)]
+                  [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:space-y-1.5 [&_ol]:text-[var(--ui-text)]
+                  [&_li]:mb-1 [&_li]:text-sm
+                  [&_strong]:font-semibold [&_strong]:text-[var(--ui-heading)]"
+                dangerouslySetInnerHTML={{
+                  __html: marked.parse(generatedPlan + (planTyping ? " █" : "")) as string
+                }}
+              />
             </div>
           )}
         </div>

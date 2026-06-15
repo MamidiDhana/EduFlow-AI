@@ -9,14 +9,28 @@ const features = [
   { icon: '📝', label: 'Notes Generator' },
   { icon: '📊', label: 'Productivity Tracker' },
   { icon: '😊', label: 'Mood Tracker' },
+  { icon: '🎯', label: 'AI Study Plan'}
 ];
 
 export default function Hero() {
   return (
-    <section className="relative isolate overflow-hidden min-h-[min(100vh,980px)]" style={{ background: 'var(--ui-bg)' }}>
-      <div className="absolute inset-0">
+    <section className="relative isolate overflow-hidden lg:min-h-[min(100vh,980px)] flex flex-col pt-[60px] lg:pt-0" style={{ background: 'var(--ui-bg)' }}>
+      {/* Mobile Image (shown only on mobile) */}
+      <div className="relative w-full h-[250px] sm:h-[350px] lg:hidden flex-shrink-0">
         <Image
-          src="/images/hero1.png"
+          src="/images/hero1.jpg"
+          alt="EduFlow AI hero image"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
+
+      {/* Desktop Background Image & Overlays (shown only on desktop) */}
+      <div className="absolute inset-0 hidden lg:block">
+        <Image
+          src="/images/hero.jpg"
           alt="EduFlow AI hero background"
           fill
           priority
@@ -57,8 +71,9 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative mx-auto flex min-h-[min(100vh,980px)] w-full max-w-7xl items-center px-5 py-20 sm:px-8 sm:py-24 lg:px-8">
-        <div className="relative z-10 max-w-2xl rounded-[32px] border border-white/40 bg-white/55 p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-[10px] sm:p-8 lg:max-w-[46%] lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
+      <div className="relative mx-auto flex flex-col lg:flex-row lg:items-center lg:min-h-[min(100vh,980px)] w-full max-w-7xl px-5 py-8 sm:px-8 lg:px-8 lg:py-24">
+        {/* <div className="relative z-10 max-w-2xl rounded-[32px] border border-white/40 bg-white/55 p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-[10px] sm:p-8 lg:max-w-[46%] lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0"> */}
+        <div className="relative z-10 max-w-2xl rounded-[32px] border border-white/20 bg-black/20 backdrop-blur-xl p-6 shadow-[0_20px_70px_rgba(15,23,42,0.25)] sm:p-8 lg:max-w-[46%]">
           <div
             className="mb-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold"
             style={{ background: 'var(--ui-surface-2)', border: '1px solid var(--ui-border)', color: '#14b8a6' }}
@@ -78,7 +93,7 @@ export default function Hero() {
 
           <p
             className="mb-8 max-w-lg leading-relaxed"
-            style={{ fontSize: 'clamp(1rem, 1.8vw, 1.12rem)', color: 'var(--ui-muted)' }}
+            style={{ fontSize: 'clamp(1rem, 1.8vw, 1.12rem)', color: 'var(--ui-subtle)' }}
           >
             EduFlow AI brings your planning, doubt solving, notes, and productivity habits
             into one beautifully organized space built for modern students.
@@ -105,7 +120,7 @@ export default function Hero() {
             </Link>
           </div>
 
-          <p className="text-sm" style={{ color: 'var(--ui-muted)' }}>
+          <p className="text-sm" style={{ color: 'var(--ui-subtle)' }}>
             Trusted by students who want consistent, focused progress.
           </p>
 
