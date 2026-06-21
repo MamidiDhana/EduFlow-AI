@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import toast from "react-hot-toast";
 
 export default function RoomTimer({ roomId, initialStatus, initialDuration = 25 }: { roomId: string, initialStatus: string, initialDuration?: number }) {
   const [timeLeft, setTimeLeft] = useState(initialDuration * 60);
@@ -39,7 +40,7 @@ const toggleTimer = async () => {
     } catch (err) {
         console.error("Failed to update timer:", err)
         setStatus(previousStatus)
-        alert("Couldn't update timer. Please try again.")
+        toast.error("Couldn't update timer. Please try again.") 
     }
 }
 
