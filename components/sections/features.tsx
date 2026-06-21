@@ -91,3 +91,40 @@ const features = [
   },
 ];
 
+export default function Features() {
+  return (
+    <section className="py-20 bg-background" id="features">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+            Everything you need to excel
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Explore the powerful tools built to streamline your academic workflow.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <div 
+              key={index}
+              className="relative p-6 rounded-2xl border border-border bg-card/50 backdrop-blur-sm hover:border-teal-500/50 transition-all duration-300"
+            >
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                style={{ backgroundColor: feature.accentBg, color: feature.accent }}
+              >
+                {feature.icon}
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground mb-3 inline-block">
+                {feature.tag}
+              </span>
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{feature.details}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
