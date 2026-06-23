@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import { captureEvent } from "../../../lib/posthog/helpers";
+import { EVENTS } from "../../../lib/posthog/events";
 
 function getAuthCallbackUrl() {
   const origin = window.location.origin;
@@ -66,9 +68,12 @@ export default function SignupPage() {
       });
 
       if (signUpError) {
+        captureEvent(EVENTS.AUTH_ERROR, { error_type: signUpError.message, page: "signup" });
         setError(getAuthErrorMessage(signUpError.message));
         return;
       }
+
+      captureEvent(EVENTS.USER_SIGNED_UP, { method: "email" });
 
       if (data.session) {
         router.replace("/dashboard");

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import { captureEvent } from "../../../lib/posthog/helpers";
+import { EVENTS } from "../../../lib/posthog/events";
 
 function getAuthErrorMessage(message: string) {
   const lower = message.toLowerCase();
@@ -69,12 +71,15 @@ function LoginPageContent() {
         password,
       });
       if (signInError) {
+        captureEvent(EVENTS.AUTH_ERROR, { error_type: signInError.message, page: "login" });
         setError(getAuthErrorMessage(signInError.message));
         return;
       }
+      captureEvent(EVENTS.USER_LOGGED_IN, { method: "email" });
       router.replace(nextPath);
       router.refresh();
     } catch (err) {
+      captureEvent(EVENTS.AUTH_ERROR, { error_type: err instanceof Error ? err.message : "unknown", page: "login" });
       setError(
         err instanceof Error
           ? getAuthErrorMessage(err.message)
