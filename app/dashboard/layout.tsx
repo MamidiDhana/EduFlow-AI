@@ -63,6 +63,11 @@ const sidebarLinks = [
         icon: "M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M12 9V5 M12 15v4 M9 12H5 M19 12h-4 M6 6l4.5 4.5 M13.5 13.5L18 18 M18 6l-4.5 4.5 M9.5 13.5L5 18",
       },
       {
+        label: "Focus Mode",
+        href: "/dashboard/focus",
+        icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+      },
+      {
         label: "Productivity",
         href: "/dashboard/productivity",
         icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
