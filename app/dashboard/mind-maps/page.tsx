@@ -238,12 +238,8 @@ export default function MindMapsPage() {
     setSelectedNodeData(null);
   };
 
-  // Generate a completely new mind map using LLM
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const queryTopic = mapInput.trim();
-    if (!queryTopic) return;
-
+  // Core generation logic that can be reused
+  const generateMindMap = async (queryTopic: string) => {
     setGenerating(true);
     setError(null);
     setSelectedNodeData(null);
@@ -297,6 +293,14 @@ export default function MindMapsPage() {
     } finally {
       setGenerating(false);
     }
+  };
+
+  // Generate a completely new mind map using LLM
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const queryTopic = mapInput.trim();
+    if (!queryTopic) return;
+    await generateMindMap(queryTopic);
   };
 
   // Handle node selection
@@ -401,16 +405,8 @@ export default function MindMapsPage() {
 
   // Deep Dive: Generate a map for a clicked node's title
   const handleDeepDive = async (subtopicName: string) => {
-    setMapInput(subtopicName);
-    const mockEvent = { preventDefault: () => {} } as React.FormEvent;
-    
-    // Set a tiny timeout to ensure react states update before fetch
-    setTimeout(() => {
-      const form = document.getElementById("gen-form");
-      if (form) {
-        form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
-      }
-    }, 50);
+    if (!subtopicName || !subtopicName.trim()) return;
+    await generateMindMap(subtopicName.trim());
   };
 
   return (
