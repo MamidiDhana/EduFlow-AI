@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
+import { identifyUser } from "../../lib/posthog/helpers";
 import FloatingTaskChecklist from "../../components/FloatingTaskChecklist";
 import FloatingChatbot from "../../components/FloatingChatbot";
 
@@ -157,6 +158,8 @@ export default function DashboardLayout({
     if (!authReady || !user) return;
     if (lastProfileSyncUserId.current === user.id) return;
     lastProfileSyncUserId.current = user.id;
+
+    identifyUser(user.id, { email: user.email });
 
     const fullName = resolveDisplayName(user);
     const avatarUrl =
