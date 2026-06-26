@@ -7,11 +7,11 @@ import FocusStats from "../../../components/FocusStats";
 
 type SessionType = "focus" | "short_break" | "long_break";
 
-// Sound options with CC0 placeholder URLs
+// Sound options with local MP3 files (downloaded from Pixabay for robust offline access)
 const AMBIENT_SOUNDS = [
-  { id: "rain", label: "Rain", url: "https://cdn.pixabay.com/audio/2021/08/04/audio_3d1a3c61b2.mp3" },
-  { id: "cafe", label: "Cafe", url: "https://cdn.pixabay.com/audio/2021/08/04/audio_51cb14b0b8.mp3" },
-  { id: "nature", label: "Nature", url: "https://cdn.pixabay.com/audio/2021/08/09/audio_82470b13bf.mp3" },
+  { id: "rain", label: "Rain", url: "/sounds/gentle-rain.mp3" },
+  { id: "jazz", label: "Jazz", url: "/sounds/jazz.mp3" },
+  { id: "nature", label: "Nature", url: "/sounds/nature-ambiance.mp3" },
 ];
 
 export default function FocusModePage() {
@@ -36,8 +36,57 @@ export default function FocusModePage() {
   
   // Audio State
   const [activeSound, setActiveSound] = useState<string | null>(null);
+  const [isPlayingSound, setIsPlayingSound] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handlePlayError = (e: any) => {
+    setIsPlayingSound(false);
+    setActiveSound(null);
+  };
+
+  const handleSoundToggle = (soundId: string) => {
+    if (activeSound === soundId) {
+      if (isPlayingSound) {
+        setIsPlayingSound(false);
+        audioRef.current?.pause();
+      } else {
+        setIsPlayingSound(true);
+        const playPromise = audioRef.current?.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(handlePlayError);
+        }
+      }
+    } else {
+      setActiveSound(soundId);
+      setIsPlayingSound(true);
+      const sound = AMBIENT_SOUNDS.find(s => s.id === soundId);
+      if (sound && audioRef.current) {
+        audioRef.current.src = sound.url;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(handlePlayError);
+        }
+      }
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (!activeSound) {
+      handleSoundToggle(AMBIENT_SOUNDS[0].id);
+      return;
+    }
+    if (isPlayingSound) {
+      setIsPlayingSound(false);
+      audioRef.current?.pause();
+    } else {
+      setIsPlayingSound(true);
+      const playPromise = audioRef.current?.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(handlePlayError);
+      }
+    }
+  };
 
   // Stats refresh trigger
   const [statsKey, setStatsKey] = useState(0);
@@ -200,18 +249,7 @@ export default function FocusModePage() {
   }, [isRunning, timeLeft]);
 
   // Handle Audio
-  useEffect(() => {
-    if (activeSound) {
-      const sound = AMBIENT_SOUNDS.find(s => s.id === activeSound);
-      if (sound && audioRef.current) {
-        audioRef.current.src = sound.url;
-        audioRef.current.volume = volume;
-        audioRef.current.play().catch(e => console.log("Audio play failed:", e));
-      }
-    } else if (audioRef.current) {
-      audioRef.current.pause();
-    }
-  }, [activeSound]);
+  // Synchronous play is handled in handleSoundToggle now to bypass Safari/mobile autoplay restrictions.
 
   useEffect(() => {
     if (audioRef.current) {
@@ -291,9 +329,20 @@ export default function FocusModePage() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row p-6 md:p-12 gap-12 overflow-y-auto">
+      <div className="flex-1 flex flex-col lg:flex-row p-6 md:p-12 gap-12 overflow-y-auto">
+        {/* Left Sidebar: Stats */}
+        <div className="w-full lg:w-80 flex flex-col gap-6 order-2 lg:order-1">
+          <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] p-6 rounded-2xl shadow-sm flex-1">
+            <h3 className="font-bold text-[#14b8a6] mb-4 flex items-center gap-2 tracking-wide">
+              <svg className="w-4 h-4 text-[#14b8a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+              FOCUS STATISTICS
+            </h3>
+            <FocusStats key={statsKey} />
+          </div>
+        </div>
+
         {/* Main Timer Area */}
-        <div className="flex-1 flex flex-col items-center justify-center min-h-[400px]">
+        <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] order-1 lg:order-2">
           <div className="flex gap-4 mb-8 bg-[var(--ui-surface)] p-1.5 rounded-2xl border border-[var(--ui-border)] shadow-sm">
             {(["focus", "short_break", "long_break"] as const).map(p => (
               <button 
@@ -347,22 +396,22 @@ export default function FocusModePage() {
           </div>
         </div>
 
-        {/* Sidebar: Ambience & Stats */}
-        <div className="w-full md:w-80 flex flex-col gap-6">
+        {/* Right Sidebar: Ambience */}
+        <div className="w-full lg:w-80 flex flex-col gap-6 order-3 lg:order-3">
           <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] p-6 rounded-2xl shadow-sm">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <h3 className="font-bold text-[#14b8a6] mb-4 flex items-center gap-2 tracking-wide">
               <svg className="w-4 h-4 text-[#14b8a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
-              Ambient Sounds
+              AMBIENT SOUNDS
             </h3>
             <div className="space-y-3">
               {AMBIENT_SOUNDS.map(s => (
                 <button 
                   key={s.id} 
-                  onClick={() => setActiveSound(activeSound === s.id ? null : s.id)}
+                  onClick={() => handleSoundToggle(s.id)}
                   className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${activeSound === s.id ? 'border-[#14b8a6] bg-[#14b8a6]/10 text-[#14b8a6]' : 'border-[var(--ui-border)] hover:bg-[var(--ui-hover)]'}`}
                 >
                   <span className="text-sm font-medium">{s.label}</span>
-                  {activeSound === s.id && (
+                  {activeSound === s.id && isPlayingSound && (
                     <div className="flex gap-1">
                       <span className="w-1 h-3 bg-[#14b8a6] animate-pulse rounded-full"></span>
                       <span className="w-1 h-4 bg-[#14b8a6] animate-pulse rounded-full" style={{ animationDelay: '100ms' }}></span>
@@ -373,26 +422,34 @@ export default function FocusModePage() {
               ))}
             </div>
             
-            {activeSound && (
-              <div className="mt-4 flex items-center gap-3">
-                <svg className="w-4 h-4 text-[var(--ui-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
-                <input 
-                  type="range" 
-                  min="0" max="1" step="0.05" 
-                  value={volume} 
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  className="w-full accent-[#14b8a6]"
-                />
+            <div className="mt-6 flex flex-col gap-4">
+              <div className="flex items-center justify-center">
+                <button 
+                  onClick={togglePlayPause} 
+                  className="w-12 h-12 rounded-full flex items-center justify-center shadow-md bg-[var(--ui-surface)] text-[var(--ui-text)] hover:scale-105 active:scale-95 transition-all border border-[var(--ui-border)]"
+                  title={isPlayingSound ? "Pause Sound" : "Play Sound"}
+                >
+                  {isPlayingSound ? (
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                  ) : (
+                    <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  )}
+                </button>
               </div>
-            )}
-          </div>
 
-          <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] p-6 rounded-2xl shadow-sm flex-1">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#14b8a6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-              Focus Statistics
-            </h3>
-            <FocusStats key={statsKey} />
+              {activeSound && (
+                <div className="flex items-center gap-3">
+                  <svg className="w-4 h-4 text-[var(--ui-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+                  <input 
+                    type="range" 
+                    min="0" max="1" step="0.05" 
+                    value={volume} 
+                    onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    className="w-full accent-[#14b8a6]"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
