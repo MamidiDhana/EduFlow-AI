@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSupabaseConfig } from "@/lib/supabase-config";
+import { rateLimit } from "@/lib/rateLimit";
+
 
 function redirectTo(
   request: NextRequest,
@@ -20,6 +22,18 @@ function redirectTo(
 }
 
 export async function proxy(request: NextRequest) {
+
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+
+  if (!rateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429 }
+    );
+  }
+}
+
   const { pathname, search } = request.nextUrl;
   const searchParams = request.nextUrl.searchParams;
 
@@ -85,5 +99,6 @@ export const config = {
     "/auth/signup",
     "/auth/forgot-password",
     "/auth/update-password",
+    "/api/:path*",
   ],
 };
