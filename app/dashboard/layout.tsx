@@ -71,7 +71,17 @@ const sidebarLinks = [
         label: "Mood Tracker",
         href: "/dashboard/mood",
         icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-      }
+      },
+      {
+        label: "Quiz",
+        href: "/dashboard/quiz",
+        icon: "M8 10h.01M12 10h.01M16 10h.01M9 16h6M12 3C7.03 3 3 6.582 3 11c0 2.386 1.174 4.528 3 6v4l3.245-1.947A11.94 11.94 0 0012 19c4.97 0 9-3.582 9-8s-4.03-8-9-8z",
+      },
+      {
+        label: "Quiz History",
+        href: "/dashboard/quiz/history",
+        icon: "M12 8v4l3 3"
+      },
     ],
   },
   {
@@ -84,6 +94,7 @@ const sidebarLinks = [
       },
     ],
   },
+  
 ];
 
 const allLinks = sidebarLinks.flatMap((g) => g.items);
