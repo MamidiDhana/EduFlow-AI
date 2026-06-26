@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
+import { identifyUser } from "../../lib/posthog/helpers";
 import FloatingTaskChecklist from "../../components/FloatingTaskChecklist";
 import FloatingChatbot from "../../components/FloatingChatbot";
 
@@ -61,6 +62,11 @@ const sidebarLinks = [
         label: "Mind Maps",
         href: "/dashboard/mind-maps",
         icon: "M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M12 9V5 M12 15v4 M9 12H5 M19 12h-4 M6 6l4.5 4.5 M13.5 13.5L18 18 M18 6l-4.5 4.5 M9.5 13.5L5 18",
+      },
+      {
+        label: "Focus Mode",
+        href: "/dashboard/focus",
+        icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
       },
       {
         label: "Productivity",
@@ -157,6 +163,8 @@ export default function DashboardLayout({
     if (!authReady || !user) return;
     if (lastProfileSyncUserId.current === user.id) return;
     lastProfileSyncUserId.current = user.id;
+
+    identifyUser(user.id, { email: user.email });
 
     const fullName = resolveDisplayName(user);
     const avatarUrl =
