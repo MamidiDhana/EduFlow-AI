@@ -52,39 +52,40 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setError(null);
     setSuccess(null);
-    setLoading(true);
+
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          emailRedirectTo: getAuthCallbackUrl(),
-          data: { full_name: name.trim() },
-        },
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
       });
 
-      if (signUpError) {
-        setError(getAuthErrorMessage(signUpError.message));
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
         return;
       }
 
-      if (data.session) {
-        router.replace("/dashboard");
-        router.refresh();
+      // agar email confirmation required hai
+      if (!data.session) {
+        setSuccess(
+          "Account created. Please check your email to confirm your account.",
+        );
         return;
       }
 
-      setSuccess(
-        "Account created. Please check your email to confirm your address. The confirmation link will bring you back to EduFlow AI.",
-      );
+      router.replace("/dashboard");
+      router.refresh();
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Could not create your account. Please try again.",
-      );
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }

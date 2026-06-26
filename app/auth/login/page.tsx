@@ -61,25 +61,27 @@ function LoginPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
+    setError(null);
+
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      if (signInError) {
-        setError(getAuthErrorMessage(signInError.message));
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Login failed");
         return;
       }
-      router.replace(nextPath);
+
+      router.replace("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? getAuthErrorMessage(err.message)
-          : "Could not log in. Please try again.",
-      );
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
