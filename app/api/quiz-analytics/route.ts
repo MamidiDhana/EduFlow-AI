@@ -1,30 +1,44 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
-
-import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    // Get access token from Authorization header
+    const token = req.headers
+      .get("authorization")
+      ?.replace("Bearer ", "");
 
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
+    // Get authenticated user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Fetch only this user's quiz attempts
     const { data, error } = await supabase
       .from("quiz_attempts")
       .select("*")
-      .eq("user_id", userId)
-      .order("created_at", {
-        ascending: true,
-      });
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true });
 
     if (error) throw error;
 
@@ -32,15 +46,20 @@ export async function GET(req: NextRequest) {
 
     const averageScore =
       totalQuizzes > 0
-        ? data.reduce((sum, item) => sum + item.percentage, 0) / totalQuizzes
+        ? data.reduce(
+            (sum, item) => sum + item.percentage,
+            0
+          ) / totalQuizzes
         : 0;
 
     const bestScore =
-      totalQuizzes > 0 ? Math.max(...data.map((item) => item.percentage)) : 0;
+      totalQuizzes > 0
+        ? Math.max(...data.map((item) => item.percentage))
+        : 0;
 
     const totalQuestions = data.reduce(
       (sum, item) => sum + item.total_questions,
-      0,
+      0
     );
 
     return NextResponse.json({
@@ -53,6 +72,9 @@ export async function GET(req: NextRequest) {
       attempts: data,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }

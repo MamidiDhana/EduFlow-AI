@@ -1,5 +1,6 @@
 "use client";
 
+import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -36,8 +37,15 @@ export default function AnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await fetch("/api/quiz-analytics");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
+      const res = await fetch("/api/quiz-analytics", {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
       if (!res.ok) {
         throw new Error("Failed to load analytics");
       }
