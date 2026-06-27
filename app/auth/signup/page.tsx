@@ -431,6 +431,23 @@ export default function SignupPage() {
                 Log in →
               </Link>
             </p>
+
+            <p className="text-center text-sm mt-3" style={{ color: "#7ca8a3" }}>
+              Want a passwordless login?{" "}
+              <Link
+                href="/auth/otp"
+                className="font-semibold transition-colors duration-150"
+                style={{ color: "#6EE7D8" }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#5EEAD4";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#6EE7D8";
+                }}
+              >
+                Continue with OTP →
+              </Link>
+            </p>
           </div>
         </div>
 
