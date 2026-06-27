@@ -32,7 +32,7 @@ function getAuthErrorMessage(message: string) {
 }
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,41 +54,40 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
+    setError(null);
+
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          emailRedirectTo: getAuthCallbackUrl(),
-          data: { full_name: name.trim() },
-        },
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullName }),
       });
 
-      if (signUpError) {
-        captureEvent(EVENTS.AUTH_ERROR, { error_type: signUpError.message, page: "signup" });
-        setError(getAuthErrorMessage(signUpError.message));
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMessage = data.error || "Signup failed. Please try again.";
+        captureEvent(EVENTS.AUTH_ERROR, {
+          error_type: errorMessage,
+          page: "signup",
+        });
+        setError(getAuthErrorMessage(errorMessage));
         return;
       }
 
       captureEvent(EVENTS.USER_SIGNED_UP, { method: "email" });
-
-      if (data.session) {
-        router.replace("/dashboard");
-        router.refresh();
-        return;
-      }
-
-      setSuccess(
-        "Account created. Please check your email to confirm your address. The confirmation link will bring you back to EduFlow AI.",
-      );
+      router.replace("/auth/login?registered=true");
+      router.refresh();
     } catch (err) {
+      captureEvent(EVENTS.AUTH_ERROR, {
+        error_type: err instanceof Error ? err.message : "unknown",
+        page: "signup",
+      });
       setError(
         err instanceof Error
-          ? err.message
-          : "Could not create your account. Please try again.",
+          ? getAuthErrorMessage(err.message)
+          : "Could not sign up. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -259,8 +258,8 @@ export default function SignupPage() {
                 <input
                   type="text"
                   placeholder="Priya Sharma"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                   className="input"
                   autoComplete="name"

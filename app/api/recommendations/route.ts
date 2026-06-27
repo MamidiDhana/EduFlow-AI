@@ -111,6 +111,7 @@ function daysBetween(dateKey1: string, dateKey2: string): number {
 // ---------- Route ----------
 
 export async function POST(req: Request) {
+    
   try {
     // Extract auth header so we know who the user is
     const authHeader = req.headers.get("authorization");

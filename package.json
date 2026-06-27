@@ -29,7 +29,7 @@
     "marked": "^18.0.5",
     "next": "^16.2.3",
     "pdfjs-dist": "^6.0.227",
-    "posthog-js": "^1.393.0",
+    "posthog-js": "^1.395.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.6.0",
