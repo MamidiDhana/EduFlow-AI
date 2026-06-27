@@ -32,7 +32,7 @@ function getAuthErrorMessage(message: string) {
 }
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -56,37 +56,39 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null);
 
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-        }),
+        body: JSON.stringify({ email, password, fullName }),
       });
 
-      if (signUpError) {
-        captureEvent(EVENTS.AUTH_ERROR, { error_type: signUpError.message, page: "signup" });
-        setError(getAuthErrorMessage(signUpError.message));
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMessage = data.error || "Signup failed. Please try again.";
+        captureEvent(EVENTS.AUTH_ERROR, {
+          error_type: errorMessage,
+          page: "signup",
+        });
+        setError(getAuthErrorMessage(errorMessage));
         return;
       }
 
       captureEvent(EVENTS.USER_SIGNED_UP, { method: "email" });
-
-      if (data.session) {
-        router.replace("/dashboard");
-        router.refresh();
-        return;
-      }
-
-      router.replace("/dashboard");
+      router.replace("/auth/login?registered=true");
       router.refresh();
     } catch (err) {
-      setError("Something went wrong");
+      captureEvent(EVENTS.AUTH_ERROR, {
+        error_type: err instanceof Error ? err.message : "unknown",
+        page: "signup",
+      });
+      setError(
+        err instanceof Error
+          ? getAuthErrorMessage(err.message)
+          : "Could not sign up. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -256,8 +258,8 @@ export default function SignupPage() {
                 <input
                   type="text"
                   placeholder="Priya Sharma"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                   className="input"
                   autoComplete="name"

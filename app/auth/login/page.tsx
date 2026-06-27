@@ -72,16 +72,27 @@ function LoginPageContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (signInError) {
-        captureEvent(EVENTS.AUTH_ERROR, { error_type: signInError.message, page: "login" });
-        setError(getAuthErrorMessage(signInError.message));
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMessage = data.error || "Login failed. Please try again.";
+        captureEvent(EVENTS.AUTH_ERROR, {
+          error_type: errorMessage,
+          page: "login",
+        });
+        setError(getAuthErrorMessage(errorMessage));
         return;
       }
+
       captureEvent(EVENTS.USER_LOGGED_IN, { method: "email" });
       router.replace(nextPath);
       router.refresh();
     } catch (err) {
-      captureEvent(EVENTS.AUTH_ERROR, { error_type: err instanceof Error ? err.message : "unknown", page: "login" });
+      captureEvent(EVENTS.AUTH_ERROR, {
+        error_type: err instanceof Error ? err.message : "unknown",
+        page: "login",
+      });
       setError(
         err instanceof Error
           ? getAuthErrorMessage(err.message)
