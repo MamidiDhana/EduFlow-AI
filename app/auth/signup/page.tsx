@@ -126,16 +126,7 @@ export default function SignupPage() {
         <div className="flex justify-center mb-7">
           <Link
             href="/"
-            className="inline-flex transition-all duration-200"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "scale(1.05)";
-              (e.currentTarget as HTMLElement).style.filter =
-                "drop-shadow(0 0 16px rgba(110,231,216,0.45))";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-              (e.currentTarget as HTMLElement).style.filter = "none";
-            }}
+            className="inline-flex transition-all duration-200 hover:scale-105 hover:drop-shadow-[0_0_16px_rgba(110,231,216,0.45)]"
           >
             <img
               src="/images/logo.png"
@@ -328,7 +319,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 mt-1 py-3 rounded-xl text-sm font-bold transition-all duration-200"
+                className="w-full flex items-center justify-center gap-2 mt-1 py-3 rounded-xl text-sm font-bold transition-all duration-200 enabled:hover:shadow-[0_6px_22px_rgba(110,231,216,0.46)] enabled:hover:-translate-y-px"
                 style={{
                   background: loading
                     ? "rgba(110,231,216,0.35)"
@@ -338,20 +329,6 @@ export default function SignupPage() {
                     ? "none"
                     : "0 4px 16px rgba(110,231,216,0.30)",
                   cursor: loading ? "not-allowed" : "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) {
-                    (e.currentTarget as HTMLElement).style.boxShadow =
-                      "0 6px 22px rgba(110,231,216,0.46)";
-                    (e.currentTarget as HTMLElement).style.transform =
-                      "translateY(-1px)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow =
-                    "0 4px 16px rgba(110,231,216,0.30)";
-                  (e.currentTarget as HTMLElement).style.transform =
-                    "translateY(0)";
                 }}
               >
                 {loading ? (
@@ -419,16 +396,19 @@ export default function SignupPage() {
               Already have an account?{" "}
               <Link
                 href="/auth/login"
-                className="font-semibold transition-colors duration-150"
-                style={{ color: "#6EE7D8" }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = "#5EEAD4";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = "#6EE7D8";
-                }}
+                className="font-semibold transition-colors duration-150 text-[#6EE7D8] hover:text-[#5EEAD4]"
               >
                 Log in →
+              </Link>
+            </p>
+
+            <p className="text-center text-sm mt-3" style={{ color: "#7ca8a3" }}>
+              Want a passwordless login?{" "}
+              <Link
+                href="/auth/otp"
+                className="font-semibold transition-colors duration-150 text-[#6EE7D8] hover:text-[#5EEAD4]"
+              >
+                Continue with OTP →
               </Link>
             </p>
           </div>
@@ -441,30 +421,14 @@ export default function SignupPage() {
           By signing up, you agree to our{" "}
           <Link
             href="/terms"
-            className="transition-colors duration-150"
-            style={{ color: "rgba(110,231,216,0.45)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "#6EE7D8";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color =
-                "rgba(110,231,216,0.45)";
-            }}
+            className="transition-colors duration-150 text-[rgba(110,231,216,0.45)] hover:text-[#6EE7D8]"
           >
             Terms
           </Link>{" "}
           and{" "}
           <Link
             href="/privacy"
-            className="transition-colors duration-150"
-            style={{ color: "rgba(110,231,216,0.45)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "#6EE7D8";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color =
-                "rgba(110,231,216,0.45)";
-            }}
+            className="transition-colors duration-150 text-[rgba(110,231,216,0.45)] hover:text-[#6EE7D8]"
           >
             Privacy Policy
           </Link>

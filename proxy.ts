@@ -52,6 +52,7 @@ export async function proxy(request: NextRequest) {
     "/auth/signup",
     "/auth/forgot-password",
     "/auth/update-password",
+    "/auth/otp",
   ];
   const isPublicAuthRoute = publicAuthRoutes.includes(pathname);
   const hasRecoveryParams =
@@ -106,6 +107,7 @@ export const config = {
     "/auth/signup",
     "/auth/forgot-password",
     "/auth/update-password",
+    "/auth/otp",
     "/api/auth/login",
     "/api/auth/signup",
   ],
