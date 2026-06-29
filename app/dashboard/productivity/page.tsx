@@ -220,17 +220,163 @@ export default function ProductivityPage() {
       ? Math.round(totalMinutes / totalSessions)
       : 0;
     const todayIso = getLocalIsoDate();
+    const today = new Date();
     const todayMinutes = sessions
       .filter((s) => s.session_date === todayIso)
       .reduce((sum, s) => sum + s.duration_minutes, 0);
-    return {
-      totalMinutes,
-      totalHours,
-      totalSessions,
-      avgDuration,
-      todayMinutes,
-    };
-  }, [sessions]);
+
+   const completionRate =
+  taskStats.totalTasks === 0
+    ? 0
+    : Math.round(
+        (taskStats.completedTasks / taskStats.totalTasks) * 100
+      );
+
+      const subjectTotals: Record<string, number> = {};
+
+sessions.forEach((session) => {
+  subjectTotals[session.subject] =
+    (subjectTotals[session.subject] || 0) +
+    session.duration_minutes;
+});
+const sortedSubjects = Object.entries(subjectTotals).sort(
+  (a, b) => b[1] - a[1]
+);
+
+const mostProductiveSubject = {
+  name: sortedSubjects[0]?.[0] ?? "No Data",
+  minutes: sortedSubjects[0]?.[1] ?? 0,
+};
+
+const subjectBreakdown = Object.values(
+  sessions.reduce((acc, session) => {
+    const key = session.subject.trim() || "Unknown";
+
+    if (!acc[key]) {
+      acc[key] = {
+        subject: key,
+        minutes: 0,
+      };
+    }
+
+    acc[key].minutes += session.duration_minutes;
+
+    return acc;
+  }, {} as Record<string, { subject: string; minutes: number }>)
+).sort((a, b) => b.minutes - a.minutes);
+
+const dayTotals: Record<string, number> = {};
+
+sessions.forEach((session) => {
+  const day = new Date(session.session_date).toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+
+  dayTotals[day] =
+    (dayTotals[day] || 0) + session.duration_minutes;
+});
+
+const sortedDays = Object.entries(dayTotals).sort(
+  (a, b) => b[1] - a[1]
+);
+
+const mostProductiveDay = {
+  name: sortedDays[0]?.[0] ?? "No Data",
+
+  minutes: sortedDays[0]?.[1] ?? 0,
+};
+
+const last7Days = Array.from({ length: 7 }, (_, i) => {
+  const date = new Date();
+  date.setDate(date.getDate() - (6 - i));
+
+  return {
+    date,
+    label: date.toLocaleDateString("en-US", {
+      weekday: "short",
+    }),
+  };
+});
+
+const weeklyStudyHours = last7Days.map(({ date, label }) => {
+  const totalMinutes = sessions
+    .filter((session) => {
+      const sessionDate = new Date(session.session_date);
+
+      return (
+        sessionDate.toDateString() === date.toDateString()
+      );
+    })
+    .reduce(
+      (sum, session) => sum + session.duration_minutes,
+      0
+    );
+
+  return {
+    day: label,
+    minutes: totalMinutes,
+    hours: +(totalMinutes / 60).toFixed(1),
+  };
+});
+
+  const maxHours = Math.max(
+  ...weeklyStudyHours.map((day) => day.hours),
+  1
+);
+
+const weeklySessions = sessions.filter((session) => {
+  const d = new Date(session.session_date);
+
+  const diff =
+    (today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+
+  return diff >= 0 && diff < 7;
+});
+
+const weeklyMinutes = weeklySessions.reduce(
+  (sum, session) => sum + session.duration_minutes,
+  0
+);
+
+const weeklySummary = {
+  sessions: weeklySessions.length,
+  hours: +(weeklyMinutes / 60).toFixed(1),
+};
+
+const monthlySessions = sessions.filter((session) => {
+  const d = new Date(session.session_date);
+  return (
+    d.getMonth() === today.getMonth() &&
+    d.getFullYear() === today.getFullYear()
+  );
+});
+
+const monthlyMinutes = monthlySessions.reduce(
+  (sum, session) => sum + session.duration_minutes,
+  0
+);
+
+const monthlySummary = {
+  sessions: monthlySessions.length,
+  hours: +(monthlyMinutes / 60).toFixed(1),
+};
+
+return {
+  totalMinutes,
+  totalHours,
+  totalSessions,
+  avgDuration,
+  todayMinutes,
+  completionRate,
+  mostProductiveSubject,
+  mostProductiveDay,
+  weeklyStudyHours,
+  maxHours,
+  weeklySummary,
+  monthlySummary,
+  subjectBreakdown,
+};
+  }, [sessions,taskStats]);
 
   const addSession = async () => {
     const cleanSubject = subject.trim();
@@ -453,7 +599,10 @@ export default function ProductivityPage() {
             value: `${stats.avgDuration} min`,
           },
           { label: "Today's Study Time", value: `${stats.todayMinutes} min` },
-        ].map((card) => (
+
+          
+
+                ].map((card) => (
           <Card key={card.label} className="p-5">
             <p className="text-xs" style={{ color: "var(--ui-muted)" }}>
               {card.label}
@@ -467,6 +616,199 @@ export default function ProductivityPage() {
           </Card>
         ))}
       </div>
+
+        <Card>
+  <SectionLabel>Study Analytics</SectionLabel>
+
+  <h3
+  className="text-sm font-semibold mb-4"
+  style={{ color: "var(--ui-heading)" }}
+>
+  Weekly Study Hours
+</h3>
+
+        {stats.weeklyStudyHours.map((day) => (
+  <div
+    key={day.day}
+    className="flex items-center gap-3 mb-3"
+  >
+    <div className="w-10 text-sm">
+      {day.day}
+    </div>
+
+    <div
+      className="flex-1 rounded-full h-3"
+      style={{
+        background: "rgba(0,0,0,0.08)",
+      }}
+    >
+      <div
+        className="h-3 rounded-full"
+        style={{
+        width: `${(day.hours / stats.maxHours) * 100}%`,
+          background:
+            "linear-gradient(90deg,#6EE7D8,#14B8A6)",
+        }}
+      />
+    </div>
+
+    <div className="w-12 text-right text-sm">
+      {day.hours}h
+    </div>
+  </div>
+))}
+
+ <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+
+  <Card className="p-4">
+  <p
+    className="text-xs"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    Weekly Summary
+  </p>
+
+  <p
+    className="text-2xl font-bold mt-2"
+    style={{ color: "var(--ui-heading)" }}
+  >
+    {stats.weeklySummary.hours}h
+  </p>
+
+  <p
+    className="text-sm mt-1"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    {stats.weeklySummary.sessions} sessions
+  </p>
+</Card>
+
+<Card className="p-4">
+  <p
+    className="text-xs"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    Monthly Summary
+  </p>
+
+  <p
+    className="text-2xl font-bold mt-2"
+    style={{ color: "var(--ui-heading)" }}
+  >
+    {stats.monthlySummary.hours}h
+  </p>
+
+  <p
+    className="text-sm mt-1"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    {stats.monthlySummary.sessions} sessions
+  </p>
+</Card>
+
+    <Card className="p-4">
+      <p
+        className="text-xs"
+        style={{ color: "var(--ui-muted)" }}
+      >
+        Task Completion
+      </p>
+
+      <p
+        className="text-2xl font-bold mt-2"
+        style={{ color: "var(--ui-heading)" }}
+      >
+        {stats.completionRate}%
+      </p>
+    </Card>
+
+<Card className="p-4">
+  <p
+    className="text-xs"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    Most Productive Subject
+  </p>
+
+  <p
+    className="text-2xl font-bold mt-2"
+    style={{ color: "var(--ui-heading)" }}
+  >
+    {stats.mostProductiveSubject.name}
+  </p>
+
+  <p
+    className="text-sm mt-1"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    {stats.mostProductiveSubject.minutes} min studied
+  </p>
+</Card>
+
+<Card className="p-4">
+  <p
+    className="text-xs"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    Most Productive Day
+  </p>
+
+  <p
+    className="text-2xl font-bold mt-2"
+    style={{ color: "var(--ui-heading)" }}
+  >
+    {stats.mostProductiveDay.name}
+  </p>
+
+  <p
+    className="text-sm mt-1"
+    style={{ color: "var(--ui-muted)" }}
+  >
+    {stats.mostProductiveDay.minutes} min studied
+  </p>
+</Card>
+<div className="mt-6">
+  <h3
+    className="text-sm font-semibold mb-3"
+    style={{ color: "var(--ui-heading)" }}
+  >
+    Subject-wise Study Breakdown
+  </h3>
+
+  <div className="mt-4 w-full space-y-4">
+    {stats.subjectBreakdown.map((item) => (
+      <div key={item.subject}>
+        <div className="flex justify-between text-sm mb-1">
+          <span>{item.subject}</span>
+          <span>{item.minutes} min</span>
+        </div>
+
+        <div
+          className="w-full h-2 rounded-full"
+          style={{ background: "#e5e7eb" }}
+        >
+          <div
+            className="h-2 rounded-full"
+            style={{
+              width: `${
+                (item.minutes /
+                  Math.max(...stats.subjectBreakdown.map((s) => s.minutes), 1)) *
+                100
+              }%`,
+              background: "#2dd4bf",
+            }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+  </div>
+</Card>
+
+
+
+
 
       <Card>
         <SectionLabel>AI Productivity Insights</SectionLabel>
